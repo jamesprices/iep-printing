@@ -1,0 +1,641 @@
+~[if#req.~[gpv:action]=new]
+ {
+    "form": {
+        "id": "",
+        "type":"~[gpv:formtype]",
+        "title": "Untitled",
+        "description": "",
+        "pages": 1,
+        "publish": false,
+        "approval": {
+            "enabled": false,
+            "password": ""
+        },
+        "sharing": {
+           "school": [],
+           "section": [],
+           "parent": "0",
+           "student": "0",
+           "teacher": "0",
+           "admin": "0",
+           "users": {
+             "student": ""
+           }
+        },
+        "archive": "",
+        "success": {
+            "message": "",
+            "link": ""
+        },
+        "response": {
+            "id": "",
+            "datetime": "",
+            "type": "",
+            "userid": "",
+            "responder": "",
+            "ipaddress": "",
+            "studentid": "",
+            "schoolid": "",
+            "gradelevel": "",
+            "yearid": ""
+        },
+        "elements": []
+    }
+}
+[/if#req]
+
+~[if#req.~[gpv:action]=edit]
+{
+~[tlist_sql;
+    select
+    '"form"'||chr(58)||'{'
+      ||'"id"'||chr(58)||''|| uff.id || ','
+      ||'"type"'||chr(58)||'"'||uff.form_type||'",'
+      ||'"title"'||chr(58)||'"'|| fb_function.esc_txt(uff.form_title) ||'",'
+      ||'"description"'||chr(58)||'"'|| fb_function.esc_txt(uff.description) ||'",'
+      ||'"pages"'||chr(58)||''|| uff.pages ||','
+      ||'"publish"'||chr(58)||''|| uff.publish ||','
+      ||'"approval"'||chr(58)||'{'
+        ||'"enabled"'||chr(58)|| nvl(uff.approval,'false') ||','
+        ||'"password"'||chr(58)||'"'|| uff.approval_password ||'"},'
+      ||'"css"'||chr(58)||'"'|| uff.custom_css ||'",'
+      ||'"sharing"'||chr(58)||'{'
+        ||'"school"'||chr(58)||chr(91)|| (select listagg(share_value,',') within group (order by share_value) from u_fb_form_sharing where share_type = 'school' and form_id = uff.id) ||chr(93)||','
+        ||'"section"'||chr(58)||chr(91)|| (select listagg(share_value,',') within group (order by share_value) from u_fb_form_sharing where share_type = 'section' and form_id = uff.id) ||chr(93)||','
+        ||'"parent"'||chr(58)||'"'|| nvl(uff.sharing_parent,'0') ||'",'
+        ||'"student"'||chr(58)||'"'|| nvl(uff.sharing_student,'0') ||'",'
+        ||'"admin"'||chr(58)||'"'|| nvl(uff.sharing_admin,'0') ||'",'
+        ||'"teacher"'||chr(58)||'"'|| nvl(uff.sharing_teacher,'0') ||'",'
+        ||'"users"'||chr(58)||'{"student"'||chr(58)||'""}},'
+      ||'"archive"'||chr(58)||'"'||       uff.archive_by ||'",'
+      ||'"success"'||chr(58)||'{'
+      ||'"message"'||chr(58)||'"'|| fb_function.esc_txt(uff.success_message) ||'",'
+      ||'"link"'||chr(58)||'"'|| fb_function.esc_txt(uff.success_link) ||'"},'
+      ||'"elements"'||chr(58)||chr(91)
+      || (select trim(',' from
+            CLOBAGG('{"type"'||chr(58)||'"' || uffe.element_type || '",'
+            || '"innerelements"'||chr(58)||'{'
+                || '"c1"'||chr(58)||chr(91)||chr(93)||','
+                || '"c2"'||chr(58)||chr(91)||chr(93)||','
+                || '"c3"'||chr(58)||chr(91)||chr(93)||','
+                || '"c4"'||chr(58)||chr(91)||chr(93)|| '},'
+            ||'"status"'||chr(58)||'{"delete"'||chr(58)||'false,"insert"'||chr(58)||'false},'
+            || '"id"'||chr(58)||'' || uffe.id || ','
+            || '"page"'||chr(58)||'' || nvl(uffe.page,'0') || ','
+            || '"position"'||chr(58)||'' || nvl(uffe.position,'0') || ','
+            || '"title"'||chr(58)||'"' || fb_function.esc_txt(uffe.title) || '",'
+            || '"description"'||chr(58)||'"' || fb_function.esc_txt(uffe.description) || '",'
+            || '"class"'||chr(58)||'"' ||           uffe.css_class || '",'
+            || '"required"'||chr(58)||'' || nvl(uffe.required,'false') || ','
+            || '"value"'||chr(58)||'"' || fb_function.esc_txt(uffe.default_value) || '",'
+            || '"placeholder"'||chr(58)||'"' || fb_function.esc_txt(uffe.placeholder) || '",'
+            || '"autocomplete"'||chr(58)||'{'
+              || '"type"'||chr(58)||'"' || uffe.autocomplete_type || '",'
+              || '"restrict"'||chr(58)||'' || nvl(uffe.autocomplete_restrict,'true') || '},'
+            || '"multiresponse"'||chr(58)||'' || nvl(uffe.multiresponse,'false') || ','
+            || '"studentfield"'||chr(58)||'{'
+              || '"name"'||chr(58)||'"' || uffe.student_field || '",'
+              || '"value"'||chr(58)||'""},'
+            || '"layout"'||chr(58)||'"' || uffe.layout || '",'
+            || '"workflow"'||chr(58)||'{'
+                || '"enabled"'||chr(58) || nvl(uffe.wf_enabled,'false') || ','
+                || '"link"'||chr(58) || nvl(uffe.wf_link,'false') || ','
+                || '"element"'||chr(58)||'' || nvl(uffe.wf_element_id,0) || ','
+                || '"value"'||chr(58)||'"' || uffe.wf_value || '"},'
+            || '"otherchoice"'||chr(58) || nvl(uffe.other_enabled,'false') || ','
+            || '"container"'||chr(58)||'{'
+              || '"enabled"'||chr(58) || nvl(uffe.containerenabled,'false') || ','
+              || '"id"'||chr(58)||'' || nvl(uffe.containerid,0) || ','
+              || '"column"'||chr(58)||'' || nvl(uffe.containercolumn,0) || ','
+              || '"position"'||chr(58)||'' || nvl(uffe.containerposition,0) || '},'
+            || CASE WHEN UPPER(UFFE.ELEMENT_TYPE) = 'PINPASSWORD' THEN '"pin"'||chr(58)||'{'
+                || '"type"'      ||chr(58) || nvl(uffe.reserved1,0) || ','
+                || '"password"'  ||chr(58) || '"' || nvl(uffe.reserved2,'') || '"},'
+            ELSE NULL END
+            || fb_function.get_table_data(uffe.id) || ','
+            || '"choices"'||chr(58)||chr(91)
+            || (
+                SELECT trim(',' from CLOBAGG('{'
+                ||'"id"'||chr(58)||'"'||UFFEC.ID||'",'
+                ||'"status"'||chr(58)||'{"delete"'||chr(58)||'false,"insert"'||chr(58)||'false},'
+                ||'"position"'||chr(58)||nvl(UFFEC.POSITION,0)||','
+                ||'"label"'||chr(58)||'"'||fb_function.esc_txt(UFFEC.LABEL)||'",'
+                ||'"value"'||chr(58)||'"'||fb_function.esc_txt(UFFEC.VALUE)||'",'
+                ||'"default"'||chr(58)||nvl(UFFEC.DEFAULT_VALUE,'false')
+                ||'}'||','))
+                FROM U_FB_FORM_ELEMENT_CHOICE UFFEC
+                WHERE UFFEC.U_FB_FORM_ELEMENT_ID = UFFE.ID
+              )
+            ||chr(93)||'}'||','))
+          from u_fb_form_element uffe
+          where uffe.u_fb_form_id = uff.id)
+        ||chr(93)||'}' as content
+    from u_fb_form uff
+    where uff.id = ~[gpv:formid]
+]~(content)[/tlist_sql]
+}
+[/if#req]
+
+~[if#req.~[gpv:action]=get]
+{
+~[tlist_sql;
+    select
+    '"form"'||chr(58)||'{'
+      ||'"id"'||chr(58)||''||            uff.id || ','
+      ||'"type"'||chr(58)||'"'||         uff.form_type||'",'
+      ||'"title"'||chr(58)||'"'||        fb_function.esc_txt(uff.form_title) ||'",'
+      ||'"description"'||chr(58)||'"'||  fb_function.esc_txt(uff.description) ||'",'
+      ||'"pages"'||chr(58)||''||         uff.pages ||','
+      ||'"publish"'||chr(58)||''||       uff.publish ||','
+      ||'"approval"'||chr(58)||'{'
+        ||'"enabled"'||chr(58)|| nvl(uff.approval,'false') ||','
+        ||'"password"'||chr(58)||'""},'
+      ||'"css"'||chr(58)||'"'||          uff.custom_css ||'",'
+      ||'"sharing"'||chr(58)||'{'
+      ||'"parent"'||chr(58)||'"'||        nvl(uff.sharing_parent,'0') ||'",'
+      ||'"student"'||chr(58)||'"'||       nvl(uff.sharing_student,'0') ||'",'
+      ||'"teacher"'||chr(58)||'"'||       nvl(uff.sharing_teacher,'0') ||'",'
+      ||'"admin"'||chr(58)||'"'||       nvl(uff.sharing_admin,'0') ||'"},'
+      ||'"archive"'||chr(58)||'"'||       uff.archive_by ||'",'
+      ||'"success"'||chr(58)||'{'
+      ||'"message"'||chr(58)||'"'||      fb_function.esc_txt(uff.success_message) ||'",'
+      ||'"link"'||chr(58)||'"'||         fb_function.esc_txt(uff.success_link) ||'"},'
+      ||'"response"'||chr(58)
+      || NVL( (SELECT '{'
+            ||'"id"'||chr(58)||'"'||          UFFR.U_FB_FORM_RESPONSE_ID||'",'
+            ||'"datetime"'||chr(58)||'"'||    TO_CHAR(UFFR.DATETIME,'MM/DD/YYYY HH'||chr(58)||'MI'||chr(58)||'SS PM')||'",'
+            ||'"type"'||chr(58)||'"'||        UFFR.RESPONSE_TYPE||'",'
+            ||'"userid"'||chr(58)||'"'||      UFFR.YEAR_ID||'",'
+            ||'"responder"'||chr(58)||'"'||   fb_function.esc_txt(UFFR.RESPONDER)||'",'
+            ||'"ipaddress"'||chr(58)||'"'||   UFFR.IPADDRESS||'",'
+            ||'"studentid"'||chr(58)||'"'||   UFFR.STUDENT_ID||'",'
+            ||'"schoolid"'||chr(58)||'"'||    UFFR.SCHOOL_ID||'",'
+            ||'"gradelevel"'||chr(58)||'"'||  UFFR.GRADE_LEVEL||'",'
+            ||'"yearid"'||chr(58)||'"'||      UFFR.YEAR_ID||'",'
+            ||'"approvalstatus"'||chr(58)||'"'||      UFFR.APPROVAL||'"'
+            ||'},'
+            FROM (
+	       select uffr.whencreated, uffr.whenmodified, UFFRA.U_FB_FORM_RESPONSE_ID, uffra.ipaddress, uffra.responder, uffra.user_id, uffra.id, UFFR.YEAR_ID, UFFR.GRADE_LEVEL, UFFR.SCHOOL_ID, UFFR.STUDENT_ID, UFFR.RESPONSE_TYPE, UFFR.DATETIME, UFFR.APPROVAL,
+		     ROW_NUMBER() OVER (ORDER BY NVL(UFFR.WHENMODIFIED,UFFR.WHENCREATED) DESC, UFFR.ID DESC) RN
+	       from u_fb_form_response uffr
+	       inner join u_fb_form_response_audit uffra 
+		  ON uffra.u_fb_form_response_id = uffr.id
+		  AND uffra.user_id IS NOT NULL
+	       WHERE UFFR.U_FB_FORM_ID = ~[gpv:formid;0]
+		  ~[if#res.~[gpv:responseid]=][else#res]AND UFFRA.U_FB_FORM_RESPONSE_ID = ~[gpv:responseid][/if#res]
+		  ~[if#studentid.~[gpv:formtype]=S] AND UFFR.STUDENT_ID = ~(curstudid) ~[if#rs.isstudent] AND UFFR.RESPONSE_TYPE = 'S'[/if#rs] ~[if#rg.isguardian] AND UFFR.RESPONSE_TYPE = 'G'[/if#rg] ~[if#ro.~[x:userid]#] AND UFFRA.USER_ID = ~[x:userid][/if#ro][/if#studentid]
+		  ~[if#studentid.~[gpv:formtype]=P] AND UFFR.STUDENT_ID = ~(curstudid)[/if#studentid]
+		  ~[if#ti.~[gpv:formtype]=TI] AND UFFR.USER_ID = ~[gpv:subjectid][/if#ti]
+		  ~[if#tc.~[gpv:formtype]=TC] AND UFFR.USER_ID = ~[gpv:subjectid][/if#tc]
+		  ~[if#formtypeg.~[gpv:formtype]=G] AND UFFR.id = -1[/if#formtypeg]
+                  ~[if#schoolid.~[gpv:formtype]=S] AND UFFR.SCHOOL_ID = ~(curschoolid)[/if#schoolid]
+                  ~[if#yearid.~[gpv:yearid]=Y]AND UFFR.YEAR_ID = ~(curyearid)[/if#yearid]
+	       ORDER BY NVL(UFFR.WHENMODIFIED,UFFR.WHENCREATED) DESC, UFFR.ID DESC
+	    ) UFFR
+	    WHERE RN = ~[if#res.~[gpv:responseid]=](select CASE count(*) WHEN 0 THEN 1 ELSE 999999999 END from u_fb_form where id = ~[gpv:formid;0] AND upper(archive_by) LIKE '%REFRESH%')[else#res]1[/if#res]
+            )
+          ,
+                '{"id"'||chr(58)||'"",'
+                ||'"datetime"'||chr(58)||'"",'
+                ||'"type"'||chr(58)||'"",'
+                ||'"userid"'||chr(58)||'"",'
+                ||'"responder"'||chr(58)||'"",'
+                ||'"ipaddress"'||chr(58)||'"",'
+                ||'"studentid"'||chr(58)||'"",'
+                ||'"schoolid"'||chr(58)||'"",'
+                ||'"gradelevel"'||chr(58)||'"",'
+                ||'"approvalstatus"'||chr(58)||'"",'
+                ||'"yearid"'||chr(58)||'""},'
+        )
+      ||'"elements"'||chr(58)||chr(91)
+      || (select trim(',' from
+            CLOBAGG('{"type"'||chr(58)||'"' ||  uffe.element_type || '",'
+            || '"innerelements"'||chr(58)||'{'
+                || '"c1"'||chr(58)||chr(91)||chr(93)||','
+                || '"c2"'||chr(58)||chr(91)||chr(93)||','
+                || '"c3"'||chr(58)||chr(91)||chr(93)||','
+                || '"c4"'||chr(58)||chr(91)||chr(93)|| '},'
+            || '"id"'||chr(58)||'' ||           uffe.id || ','
+            || '"page"'||chr(58)||'' ||         nvl(uffe.page,'0') || ','
+            || '"position"'||chr(58)||'' ||     nvl(uffe.position,'0') || ','
+            || '"title"'||chr(58)||'"' ||       CASE WHEN uffe.element_type = 'textblock' THEN CASE WHEN '~[gpv:formtype]' IN ('S','P') THEN fb_function.process_text(fb_function.esc_txt(uffe.title), ~(curstudid)) ELSE  fb_function.esc_txt(uffe.title) END ELSE fb_function.esc_txt(uffe.title)       END || '",'
+            || '"description"'||chr(58)||'"' || CASE WHEN uffe.element_type = 'textblock' THEN CASE WHEN '~[gpv:formtype]' IN ('S','P') THEN fb_function.process_text(fb_function.esc_txt(uffe.description), ~(curstudid)) ELSE  fb_function.esc_txt(uffe.description) END  ELSE fb_function.esc_txt(uffe.description) END || '",'
+            || '"class"'||chr(58)||'"' ||           uffe.css_class || '",'
+            || '"required"'||chr(58)||'' ||     nvl(uffe.required,'false') || ','
+            || '"value"'||chr(58)||'"' ||       fb_function.esc_txt(uffe.default_value) || '",'
+            ||'"responseElementID"'||chr(58)||  nvl(UFFR.RESPONSEELEMENTID,0)||','
+            ||'"responseDetailID"'||chr(58)||   nvl(UFFR.RESPONSEDETAILID,0)||','
+            || '"response"'||chr(58)||'"'||     fb_function.esc_txt(UFFR.RESPONSE) ||'",'
+            || '"placeholder"'||chr(58)||'"' || fb_function.esc_txt(uffe.placeholder) || '",'
+            || '"autocomplete"'||chr(58)||'{'
+              || '"type"'||chr(58)||'"' ||        uffe.autocomplete_type || '",'
+              || '"restrict"'||chr(58)||'' ||     nvl(uffe.autocomplete_restrict,'true') || '},'
+            || '"multiresponse"'||chr(58)||'' || nvl(uffe.multiresponse,'false') || ','
+            || '"studentfield"'||chr(58)||'{'
+              || '"name"'||chr(58)||'"' ||        uffe.student_field || '",'
+              || '"validation"'||chr(58)|| '{'|| (SELECT CASE WHEN INSTR(LISTAGG(
+							 CASE WHEN ROWNUM = 1 THEN '"key"' || CHR(58) || '"' || lower(f.fldkey) || '",' ELSE NULL END || 
+							 CASE RULETYPE
+							   WHEN 'MAXLENGTH'    THEN '"maxlength"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'TEXTMASK'     THEN '"textMask"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'EXCLUDECHARS' THEN '"excludechars"'||CHR(58)||'"true"'
+							   WHEN 'MINLENGTH'    THEN '"minlength"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISREQUIRED'   THEN '"required"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISDATE'       THEN '"type"'||CHR(58)||'"date"'
+							   WHEN 'ISNUMERIC'    THEN '"type"'||CHR(58)||'"number"'
+							   WHEN 'MAX_DATE_VALUE'    THEN '"maxValue"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'MIN_DATE_VALUE'    THEN '"minValue"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISINTEGER'    THEN '"minValue"'||CHR(58)||'"'||dvvalue||'"'
+							 ELSE NULL END,',') WITHIN GROUP (order by 1),'"type"') = 0 
+							 THEN '"type"' || CHR(58) || '"text",' || LISTAGG(
+							 CASE WHEN ROWNUM = 1 THEN '"key"' || CHR(58) || '"' || lower(f.fldkey) || '",' ELSE NULL END || 
+							 CASE RULETYPE
+							   WHEN 'MAXLENGTH'    THEN '"maxlength"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'TEXTMASK'     THEN '"textMask"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'EXCLUDECHARS' THEN '"excludechars"'||CHR(58)||'"true"'
+							   WHEN 'MINLENGTH'    THEN '"minlength"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISREQUIRED'   THEN '"required"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISDATE'       THEN '"type"'||CHR(58)||'"date"'
+							   WHEN 'ISNUMERIC'    THEN '"type"'||CHR(58)||'"number"'
+							   WHEN 'MAX_DATE_VALUE'    THEN '"maxValue"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'MIN_DATE_VALUE'    THEN '"minValue"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISINTEGER'    THEN '"minValue"'||CHR(58)||'"'||dvvalue||'"'
+							 ELSE NULL END,',') WITHIN GROUP (order by 1)
+							 ELSE LISTAGG(
+							 CASE WHEN ROWNUM = 1 THEN '"key"' || CHR(58) || '"' || lower(f.fldkey) || '",' ELSE NULL END || 
+							 CASE RULETYPE
+							   WHEN 'MAXLENGTH'    THEN '"maxlength"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'TEXTMASK'     THEN '"textMask"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'EXCLUDECHARS' THEN '"excludechars"'||CHR(58)||'"true"'
+							   WHEN 'MINLENGTH'    THEN '"minlength"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISREQUIRED'   THEN '"required"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISDATE'       THEN '"type"'||CHR(58)||'"date"'
+							   WHEN 'ISNUMERIC'    THEN '"type"'||CHR(58)||'"number"'
+							   WHEN 'MAX_DATE_VALUE'    THEN '"maxValue"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'MIN_DATE_VALUE'    THEN '"minValue"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISINTEGER'    THEN '"minValue"'||CHR(58)||'"'||dvvalue||'"'
+							 ELSE NULL END,',') WITHIN GROUP (order by 1)
+							 END
+							 from DV_FIELDS f
+							 LEFT OUTER JOIN DV_RULES r ON R.DVFIELDSID = F.ID
+							 LEFT OUTER JOIN DV_RULETYPES rt ON RT.ID = R.DVRULETYPESID
+							 WHERE F.FLDTABLE = 'STUDENTS' AND F.FLDCOLUMN = UPPER(uffe.student_field)
+						)  || '},'
+                    || '"value"'||chr(58)||'"' ||       CASE WHEN '~[gpv:formtype]' IN ('S','P') THEN
+                                                            CASE WHEN UPPER(UFFE.ELEMENT_TYPE) = 'PINPASSWORD' THEN NULL ELSE fb_function.esc_txt(fb_function.get_field('STUDENTS',uffe.student_field,~(curstudid))) END
+                                                        ELSE null END || '"},'
+            || '"layout"'||chr(58)||'"' ||      uffe.layout || '",'
+            || '"workflow"'||chr(58)||'{'
+                || '"enabled"'||chr(58) || nvl(uffe.wf_enabled,'false') || ','
+                || '"link"'||chr(58) || nvl(uffe.wf_link,'false') || ','
+                || '"element"'||chr(58)||'' || nvl(uffe.wf_element_id,0) || ','
+                || '"value"'||chr(58)||'"' || uffe.wf_value || '"},'
+            || '"otherchoice"'||chr(58) || nvl(uffe.other_enabled,'false') || ','
+            || '"container"'||chr(58)||'{'
+                || '"enabled"'||chr(58) || nvl(uffe.containerenabled,'false') || ','
+                || '"id"'||chr(58)||'' || nvl(uffe.containerid,0) || ','
+                || '"column"'||chr(58)||'' || nvl(uffe.containercolumn,0) || ','
+                || '"position"'||chr(58)||'' || nvl(uffe.containerposition,0) || '},'
+            || CASE WHEN UPPER(UFFE.ELEMENT_TYPE) = 'PINPASSWORD' THEN '"pin"'||chr(58)||'{'
+                || '"type"'      ||chr(58)  || nvl(uffe.reserved1,0) || '},'
+                ELSE NULL END
+            || fb_function.get_table_data(uffe.id, ~(curstudid)) || ','
+            || '"choices"'||chr(58)||chr(91)
+            ||chr(93)||'}'||','))
+          from u_fb_form_element uffe
+            left outer join (
+              SELECT UFFRE.U_FB_FORM_ELEMENT_ID, UFFRD.RESPONSE_VALUE RESPONSE, UFFRD.ID RESPONSEDETAILID, UFFRE.ID RESPONSEELEMENTID , UFFR.WHENCREATED, UFFR.WHENMODIFIED
+              FROM (
+                         select uffr.whencreated, uffr.whenmodified, UFFRA.U_FB_FORM_RESPONSE_ID, uffra.ipaddress, uffra.responder, uffra.user_id, uffra.id uffra_id, uffr.id uffr_id, UFFR.YEAR_ID, UFFR.GRADE_LEVEL, UFFR.SCHOOL_ID, UFFR.STUDENT_ID, UFFR.RESPONSE_TYPE, UFFR.DATETIME,
+                         ROW_NUMBER() OVER (ORDER BY NVL(UFFR.WHENMODIFIED,UFFR.WHENCREATED) DESC, UFFR.ID DESC) RN
+                         from u_fb_form_response uffr
+                         inner join u_fb_form_response_audit uffra 
+                      ON uffra.u_fb_form_response_id = uffr.id ~[if#res.~[gpv:responseid]=][else#res]AND UFFRA.U_FB_FORM_RESPONSE_ID = ~[gpv:responseid][/if#res]
+                      AND uffra.user_id IS NOT NULL
+                         WHERE UFFR.U_FB_FORM_ID = ~[gpv:formid;0]
+			~[if#studentid.~[gpv:formtype]=S] AND UFFR.STUDENT_ID = ~(curstudid) ~[if#rs.isstudent] AND UFFR.RESPONSE_TYPE = 'S'[/if#rs] ~[if#rg.isguardian] AND UFFR.RESPONSE_TYPE = 'G'[/if#rg] ~[if#ro.~[x:userid]#] AND UFFRA.USER_ID = ~[x:userid][/if#ro][/if#studentid]
+			~[if#studentid.~[gpv:formtype]=P] AND UFFR.STUDENT_ID = ~(curstudid)[/if#studentid]
+			~[if#ti.~[gpv:formtype]=TI] AND UFFR.USER_ID = ~[gpv:subjectid][/if#ti]
+			~[if#tc.~[gpv:formtype]=TC] AND UFFR.USER_ID = ~[gpv:subjectid][/if#tc]
+			~[if#formtypeg.~[gpv:formtype]=G] AND UFFR.id = -1[/if#formtypeg]
+			~[if#schoolid.~[gpv:formtype]=S] AND UFFR.SCHOOL_ID = ~(curschoolid)[/if#schoolid]
+			~[if#yearid.~[gpv:yearid]=Y]AND UFFR.YEAR_ID = ~(curyearid)[/if#yearid]
+                         ORDER BY NVL(UFFR.WHENMODIFIED,UFFR.WHENCREATED) DESC, UFFR.ID DESC
+               ) UFFR
+              INNER JOIN U_FB_FORM_RESPONSE_DETAIL UFFRD ON UFFR.uffr_ID = UFFRD.U_FB_FORM_RESPONSE_ID
+              INNER JOIN U_FB_FORM_RESPONSE_ELEMENT UFFRE ON UFFR.uffr_ID = UFFRE.U_FB_FORM_RESPONSE_ID AND UFFRD.U_FB_FORM_RESPONSE_ELEMENT_ID = UFFRE.ID
+              WHERE UFFR.RN = ~[if#res.~[gpv:responseid]=](select CASE count(*) WHEN 0 THEN 1 ELSE 999999999 END from u_fb_form where id = ~[gpv:formid;0] AND upper(archive_by) LIKE '%REFRESH%')[else#res]1[/if#res]
+              ORDER BY NVL(UFFR.WHENMODIFIED,UFFR.WHENCREATED) desc
+            ) UFFR ON uffe.id = UFFR.U_FB_FORM_ELEMENT_ID
+            WHERE UFFE.U_FB_FORM_ID = ~[gpv:formid;0])
+        ||chr(93)||'}' as content
+    from u_fb_form uff
+    where uff.id = ~[gpv:formid;0]]~(content)[/tlist_sql]
+}
+[/if#req]
+
+~[if#req.~[gpv:action]=getChoices]
+[
+~[tlist_sql;
+    SELECT
+      uffe.id elementid
+    , UFFEC.ID choiceid
+    , fb_function.esc_txt(UFFEC.LABEL) choicelabel
+    , fb_function.esc_txt(UFFEC.VALUE) choicevalue
+    , nvl(UFFEC.POSITION,0) choiceposition
+    , nvl(UFFEC.DEFAULT_VALUE,'false') choicedefault
+    , nvl(UFFREC.ID,0) responseid
+    , nvl(UFFREC.response_selected,CASE WHEN to_char(fb_function.esc_txt(fb_function.get_field('STUDENTS',uffe.student_field,~(curstudid)))) = uffec.value THEN 'true' ELSE 'false' END) responseselected
+    , CASE WHEN row_number() OVER(ORDER BY null) = count(*) OVER() THEN '' ELSE ',' END AS cma
+    FROM u_fb_form_element uffe
+    INNER JOIN U_FB_FORM_ELEMENT_CHOICE UFFEC ON UFFEC.U_FB_FORM_ELEMENT_ID = UFFE.ID
+    LEFT OUTER JOIN (
+            SELECT UFFR.ID, WHENCREATED, WHENMODIFIED, ROW_NUMBER() OVER (ORDER BY NVL(WHENMODIFIED,WHENCREATED) desc) rn
+            --UFFRE.U_FB_FORM_ELEMENT_ID, UFFREC.ID RESPONSECHOICEID, UFFREC.RESPONSE_SELECTED, UFFREC.RESPONSE_VALUE, UFFREC.U_FB_FORM_ELEMENT_CHOICE_ID
+            FROM U_FB_FORM_RESPONSE UFFR
+            INNER JOIN (
+			SELECT ROW_NUMBER() OVER (PARTITION BY U_FB_FORM_RESPONSE_ID ORDER BY ID DESC) RN, U_FB_FORM_RESPONSE_ID, IPADDRESS, ID, responder, user_id
+			FROM U_FB_FORM_RESPONSE_AUDIT
+			WHERE USER_ID IS NOT NULL
+			~[if#res.~[gpv:responseid]=][else#res]AND U_FB_FORM_RESPONSE_AUDIT.U_FB_FORM_RESPONSE_ID = ~[gpv:responseid][/if#res]
+            ) UFFRA ON UFFR.ID = UFFRA.U_FB_FORM_RESPONSE_ID AND UFFRA.RN = 1
+            WHERE UFFR.U_FB_FORM_ID = ~[gpv:formid;0]
+                ~[if#studentid.~[gpv:formtype]=S] AND UFFR.STUDENT_ID = ~(curstudid) ~[if#rs.isstudent] AND UFFR.RESPONSE_TYPE = 'S'[/if#rs] ~[if#rg.isguardian] AND UFFR.RESPONSE_TYPE = 'G'[/if#rg] ~[if#ro.~[x:userid]#] AND UFFRA.USER_ID = ~[x:userid][/if#ro][/if#studentid]
+                ~[if#studentid.~[gpv:formtype]=P] AND UFFR.STUDENT_ID = ~(curstudid)[/if#studentid]
+                ~[if#ti.~[gpv:formtype]=TI] AND UFFR.USER_ID = ~[gpv:subjectid][/if#ti]
+                ~[if#tc.~[gpv:formtype]=TC] AND UFFR.USER_ID = ~[gpv:subjectid][/if#tc]
+                ~[if#formtypeg.~[gpv:formtype]=G] AND UFFR.id = -1[/if#formtypeg]
+                ~[if#schoolid.~[gpv:formtype]=S] AND UFFR.SCHOOL_ID = ~(curschoolid)[/if#schoolid]
+                ~[if#yearid.~[gpv:yearid]=Y]AND UFFR.YEAR_ID = ~(curyearid)[/if#yearid]
+	       ORDER BY NVL(WHENMODIFIED,WHENCREATED) desc
+    ) UFFR ON UFFR.RN = 1
+    LEFT OUTER JOIN (select uffrec.id, uffrec.response_selected, UFFR.ID UFFRID, UFFEC.ID CHOICEID
+              FROM u_fb_form_element uffe
+              INNER JOIN U_FB_FORM_ELEMENT_CHOICE UFFEC ON UFFEC.U_FB_FORM_ELEMENT_ID = UFFE.ID
+              INNER JOIN (
+                              SELECT UFFR.ID, WHENCREATED, WHENMODIFIED, ROW_NUMBER() OVER (ORDER BY NVL(WHENMODIFIED,WHENCREATED) desc) rn
+                              --UFFRE.U_FB_FORM_ELEMENT_ID, UFFREC.ID RESPONSECHOICEID, UFFREC.RESPONSE_SELECTED, UFFREC.RESPONSE_VALUE, UFFREC.U_FB_FORM_ELEMENT_CHOICE_ID
+                              FROM U_FB_FORM_RESPONSE UFFR
+                              INNER JOIN (SELECT ROW_NUMBER() OVER (PARTITION BY U_FB_FORM_RESPONSE_ID ORDER BY ID DESC) RN, U_FB_FORM_RESPONSE_ID, IPADDRESS, ID, responder, user_id
+                                          FROM U_FB_FORM_RESPONSE_AUDIT
+                                          WHERE USER_ID IS NOT NULL
+			~[if#res.~[gpv:responseid]=][else#res]AND U_FB_FORM_RESPONSE_AUDIT.U_FB_FORM_RESPONSE_ID = ~[gpv:responseid][/if#res]
+                              ) UFFRA ON UFFR.ID = UFFRA.U_FB_FORM_RESPONSE_ID AND UFFRA.RN = ~[if#res.~[gpv:responseid]=](select CASE count(*) WHEN 0 THEN 1 ELSE 999999999 END from u_fb_form where id = ~[gpv:formid;0] AND upper(archive_by) LIKE '%REFRESH%')[else#res]1[/if#res]
+                              WHERE UFFR.U_FB_FORM_ID = ~[gpv:formid;0]
+				 ~[if#studentid.~[gpv:formtype]=S] AND UFFR.STUDENT_ID = ~(curstudid) ~[if#rs.isstudent] AND UFFR.RESPONSE_TYPE = 'S'[/if#rs] ~[if#rg.isguardian] AND UFFR.RESPONSE_TYPE = 'G'[/if#rg] ~[if#ro.~[x:userid]#] AND UFFRA.USER_ID = ~[x:userid][/if#ro][/if#studentid]
+				 ~[if#studentid.~[gpv:formtype]=P] AND UFFR.STUDENT_ID = ~(curstudid)[/if#studentid]
+				 ~[if#ti.~[gpv:formtype]=TI] AND UFFR.USER_ID = ~[gpv:subjectid][/if#ti]
+				 ~[if#tc.~[gpv:formtype]=TC] AND UFFR.USER_ID = ~[gpv:subjectid][/if#tc]
+				 ~[if#formtypeg.~[gpv:formtype]=G] AND UFFR.id = -1[/if#formtypeg]
+				 ~[if#schoolid.~[gpv:formtype]=S] AND UFFR.SCHOOL_ID = ~(curschoolid)[/if#schoolid]
+				 ~[if#yearid.~[gpv:yearid]=Y]AND UFFR.YEAR_ID = ~(curyearid)[/if#yearid]
+                              ORDER BY NVL(WHENMODIFIED,WHENCREATED) desc
+              ) UFFR ON UFFR.RN = ~[if#res.~[gpv:responseid]=](select CASE count(*) WHEN 0 THEN 1 ELSE 999999999 END from u_fb_form where id = ~[gpv:formid;0] AND upper(archive_by) LIKE '%REFRESH%')[else#res]1[/if#res]
+              INNER JOIN U_FB_FORM_RESPONSE_ELEMENT UFFRE ON UFFR.ID = UFFRE.U_FB_FORM_RESPONSE_ID
+              INNER JOIN U_FB_FORM_RESP_ELE_CHOICE UFFREC ON UFFRE.ID = UFFREC.U_FB_FORM_RESPONSE_ELEMENT_ID AND UFFREC.U_FB_FORM_ELEMENT_CHOICE_ID = UFFEC.ID
+              WHERE UFFE.U_FB_FORM_ID = ~[gpv:formid;0]
+    ) UFFREC ON UFFREC.UFFRID = UFFR.ID AND UFFREC.CHOICEID = UFFEC.ID
+    WHERE UFFE.U_FB_FORM_ID = ~[gpv:formid;0]]
+    {
+        "elementid": ~(elementid),
+        "id": "~(choiceid)",
+        "status": {
+            "delete": false,
+            "insert": false
+        },
+        "label": "~(choicelabel)",
+        "value": "~(choicevalue)",
+        "position": ~(choiceposition),
+        "default": ~(choicedefault),
+        "responseChoiceID": ~(responseid),
+        "responseSelected": ~(responseselected)
+    }~(cma)
+[/tlist_sql]
+]
+[/if#req]
+
+~[if#req.~[gpv:action]=getResponseList]
+[   ~[tlist_sql;
+    select '{"datetime"'
+        || CHR(58) || '"' || to_char(NVL(uffr.whenmodified,uffr.whencreated),'mm/dd/yyyy hh'||chr(58)||'mi'||chr(58)||'ss am') || '","createdBy"'
+        || CHR(58) || '"' || uffr.created_by || '", "modifiedBy"'
+        || CHR(58) || '"' || uffr.modified_by || '", "formid"'
+        || CHR(58) || uffr.u_fb_form_id || ', "responseid"'
+        || CHR(58) || uffr.id || '},'
+    from u_fb_form_response uffr
+    INNER JOIN (
+    SELECT IPADDRESS, RESPONDER, USER_ID, ID, U_FB_FORM_RESPONSE_ID, row_number() over (partition by u_fb_form_response_id order by id desc) rn
+    FROM U_FB_FORM_RESPONSE_AUDIT UFFRA
+    WHERE USER_ID IS NOT NULL
+    ) uffra ON uffr.id = uffra.u_fb_form_response_id AND uffra.rn = 1
+    WHERE uffr.U_FB_FORM_ID = ~[gpv:formid]
+        ~[if#studentid.~[gpv:formtype]=S] AND UFFR.STUDENT_ID = ~(curstudid)
+        ~[if#rs.isstudent] AND UFFR.RESPONSE_TYPE = 'S'[/if#rs]
+        ~[if#rg.isguardian] AND UFFR.RESPONSE_TYPE = 'G'[/if#rg]
+        [/if#studentid]
+        ~[if#studentid.~[gpv:formtype]=P] AND UFFR.STUDENT_ID = ~(curstudid)[/if#studentid]
+        ~[if#ti.~[gpv:formtype]=TI] AND UFFR.USER_ID = ~[gpv:subjectid][/if#ti]
+        ~[if#tc.~[gpv:formtype]=TC] AND UFFR.USER_ID = ~[gpv:subjectid][/if#tc]
+        ~[if#schoolid.~[gpv:formtype]=S] AND UFFR.SCHOOL_ID = ~(curschoolid)[/if#schoolid]
+        ~[if#yearid.~[gpv:yearid]=Y]AND UFFR.YEAR_ID = ~(curyearid)[/if#yearid]]
+        ~(1;t)
+    [/tlist_sql]{}]
+[/if#req]
+ 
+~[if#req.~[gpv:action]=getv1]
+{
+~[tlist_sql;
+    select
+    '"form"'||chr(58)||'{'
+      ||'"id"'||chr(58)||''||            uff.id || ','
+      ||'"type"'||chr(58)||'"'||         uff.form_type||'",'
+      ||'"title"'||chr(58)||'"'||        fb_function.esc_txt(uff.form_title) ||'",'
+      ||'"description"'||chr(58)||'"'||  fb_function.esc_txt(uff.description) ||'",'
+      ||'"pages"'||chr(58)||''||         uff.pages ||','
+      ||'"publish"'||chr(58)||''||       uff.publish ||','
+      ||'"sharing"'||chr(58)||'{'
+      ||'"parent"'||chr(58)||'"'||        nvl(uff.sharing_parent,'0') ||'",'
+      ||'"student"'||chr(58)||'"'||       nvl(uff.sharing_student,'0') ||'",'
+      ||'"teacher"'||chr(58)||'"'||       nvl(uff.sharing_teacher,'0') ||'",'
+      ||'"admin"'||chr(58)||'"'||       nvl(uff.sharing_admin,'0') ||'"},'
+      ||'"archive"'||chr(58)||'"'||       uff.archive_by ||'",'
+      ||'"success"'||chr(58)||'{'
+      ||'"message"'||chr(58)||'"'||      fb_function.esc_txt(uff.success_message) ||'",'
+      ||'"link"'||chr(58)||'"'||         fb_function.esc_txt(uff.success_link) ||'"},'
+      ||'"response"'||chr(58)
+      || NVL( (SELECT '{'
+            ||'"id"'||chr(58)||'"'||          UFFR.ID||'",'
+            ||'"datetime"'||chr(58)||'"'||    TO_CHAR(UFFR.DATETIME,'MM/DD/YYYY HH'||chr(58)||'MI'||chr(58)||'SS PM')||'",'
+            ||'"type"'||chr(58)||'"'||        UFFR.RESPONSE_TYPE||'",'
+            ||'"userid"'||chr(58)||'"'||      UFFR.YEAR_ID||'",'
+            ||'"responder"'||chr(58)||'"'||   fb_function.esc_txt(UFFRA.RESPONDER)||'",'
+            ||'"ipaddress"'||chr(58)||'"'||   UFFRA.IPADDRESS||'",'
+            ||'"studentid"'||chr(58)||'"'||   UFFR.STUDENT_ID||'",'
+            ||'"schoolid"'||chr(58)||'"'||    UFFR.SCHOOL_ID||'",'
+            ||'"gradelevel"'||chr(58)||'"'||  UFFR.GRADE_LEVEL||'",'
+            ||'"yearid"'||chr(58)||'"'||      UFFR.YEAR_ID||'"'
+            ||'},'
+            FROM U_FB_FORM_RESPONSE UFFR
+            INNER JOIN (
+              SELECT IPADDRESS, RESPONDER, USER_ID, ID, U_FB_FORM_RESPONSE_ID, row_number() over (partition by u_fb_form_response_id order by id desc) rn
+              FROM U_FB_FORM_RESPONSE_AUDIT UFFRA
+              /*
+               *THE WHERE CLAUSE HERE WILL ENSURE THAT ONLY AUDIT RECORDS THAT SIGNIFY A NEW RESPONSE OR EDITED
+               *RESPONSE WILL PULL INTO THE JSON
+               */
+              WHERE USER_ID IS NOT NULL
+              ~[if#res.~[gpv:responseid]=][else#res]AND UFFRA.U_FB_FORM_RESPONSE_ID = ~[gpv:responseid][/if#res]
+              /*AND UFFRA.USER_ID = 59
+               *FUTURE USE TO ADD BY USER_ID
+               */
+            ) UFFRA ON UFFR.ID = UFFRA.U_FB_FORM_RESPONSE_ID AND RN = ~[if#res.~[gpv:responseid]=](select CASE count(*) WHEN 0 THEN 1 ELSE 999999999 END from u_fb_form where id = ~[gpv:formid;0] AND upper(archive_by) LIKE '%REFRESH%')[else#res]1[/if#res]
+            WHERE ROWNUM <= 1
+                  AND UFFR.U_FB_FORM_ID = ~[gpv:formid]
+                ~[if#studentid.~[gpv:formtype]=S] AND UFFR.STUDENT_ID = ~(curstudid) ~[if#rs.isstudent] AND UFFR.RESPONSE_TYPE = 'S'[/if#rs] ~[if#rg.isguardian] AND UFFR.RESPONSE_TYPE = 'G'[/if#rg] ~[if#ro.~[x:userid]#] AND UFFRA.USER_ID = ~[x:userid][/if#ro][/if#studentid]
+                ~[if#studentid.~[gpv:formtype]=P] AND UFFR.STUDENT_ID = ~(curstudid)[/if#studentid]
+                ~[if#ti.~[gpv:formtype]=TI] AND UFFR.USER_ID = ~[gpv:subjectid][/if#ti]
+                ~[if#tc.~[gpv:formtype]=TC] AND UFFR.USER_ID = ~[gpv:subjectid][/if#tc]
+                ~[if#formtypeg.~[gpv:formtype]=G] AND UFFR.id = -1[/if#formtypeg]
+                  ~[if#schoolid.~[gpv:formtype]=S] AND UFFR.SCHOOL_ID = ~(curschoolid)[/if#schoolid]--AND UFFR.SCHOOL_ID = 100 --
+                  ~[if#yearid.~[gpv:yearid]=Y]AND UFFR.YEAR_ID = ~(curyearid)[/if#yearid]
+            )
+          ,
+                '{"id"'||chr(58)||'"",'
+                ||'"datetime"'||chr(58)||'"",'
+                ||'"type"'||chr(58)||'"",'
+                ||'"userid"'||chr(58)||'"",'
+                ||'"responder"'||chr(58)||'"",'
+                ||'"ipaddress"'||chr(58)||'"",'
+                ||'"studentid"'||chr(58)||'"",'
+                ||'"schoolid"'||chr(58)||'"",'
+                ||'"gradelevel"'||chr(58)||'"",'
+                ||'"yearid"'||chr(58)||'""},'
+        )
+      ||'"elements"'||chr(58)||chr(91)
+      || (select trim(',' from
+            CLOBAGG('{"type"'||chr(58)||'"' ||  uffe.element_type || '",'
+            || '"innerelements"'||chr(58)||'{'
+                || '"c1"'||chr(58)||chr(91)||chr(93)||','
+                || '"c2"'||chr(58)||chr(91)||chr(93)||','
+                || '"c3"'||chr(58)||chr(91)||chr(93)||','
+                || '"c4"'||chr(58)||chr(91)||chr(93)|| '},'
+            || '"id"'||chr(58)||'' ||           uffe.id || ','
+            || '"page"'||chr(58)||'' ||         nvl(uffe.page,'0') || ','
+            || '"position"'||chr(58)||'' ||     nvl(uffe.position,'0') || ','
+            || '"title"'||chr(58)||'"' ||       CASE WHEN uffe.element_type = 'textblock' THEN CASE WHEN '~[gpv:formtype]' IN ('S','P') THEN fb_function.process_text(fb_function.esc_txt(uffe.title), ~(curstudid)) ELSE  fb_function.esc_txt(uffe.title) END ELSE fb_function.esc_txt(uffe.title)       END || '",'
+            || '"description"'||chr(58)||'"' || CASE WHEN uffe.element_type = 'textblock' THEN CASE WHEN '~[gpv:formtype]' IN ('S','P') THEN fb_function.process_text(fb_function.esc_txt(uffe.description), ~(curstudid)) ELSE  fb_function.esc_txt(uffe.description) END  ELSE fb_function.esc_txt(uffe.description) END || '",'
+            || '"required"'||chr(58)||'' ||     nvl(uffe.required,'false') || ','
+            || '"value"'||chr(58)||'"' ||       fb_function.esc_txt(uffe.default_value) || '",'
+            ||'"responseElementID"'||chr(58)||  nvl(UFFR.RESPONSEELEMENTID,0)||','
+            ||'"responseDetailID"'||chr(58)||   nvl(UFFR.RESPONSEDETAILID,0)||','
+            || '"response"'||chr(58)||'"'||     fb_function.esc_txt(UFFR.RESPONSE) ||'",'
+            || '"placeholder"'||chr(58)||'"' || fb_function.esc_txt(uffe.placeholder) || '",'
+            || '"autocomplete"'||chr(58)||'{'
+              || '"type"'||chr(58)||'"' ||        uffe.autocomplete_type || '",'
+              || '"restrict"'||chr(58)||'' ||     nvl(uffe.autocomplete_restrict,'true') || '},'
+            || '"multiresponse"'||chr(58)||'' || nvl(uffe.multiresponse,'false') || ','
+            || '"studentfield"'||chr(58)||'{'
+              || '"name"'||chr(58)||'"' ||        uffe.student_field || '",'
+              || '"validation"'||chr(58)|| '{'|| (SELECT CASE WHEN INSTR(LISTAGG(
+							 CASE WHEN ROWNUM = 1 THEN '"key"' || CHR(58) || '"' || lower(f.fldkey) || '",' ELSE NULL END || 
+							 CASE RULETYPE
+							   WHEN 'MAXLENGTH'    THEN '"maxlength"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'TEXTMASK'     THEN '"textMask"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'EXCLUDECHARS' THEN '"excludechars"'||CHR(58)||'"true"'
+							   WHEN 'MINLENGTH'    THEN '"minlength"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISREQUIRED'   THEN '"required"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISDATE'       THEN '"type"'||CHR(58)||'"date"'
+							   WHEN 'ISNUMERIC'    THEN '"type"'||CHR(58)||'"number"'
+							   WHEN 'MAX_DATE_VALUE'    THEN '"maxValue"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'MIN_DATE_VALUE'    THEN '"minValue"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISINTEGER'    THEN '"minValue"'||CHR(58)||'"'||dvvalue||'"'
+							 ELSE NULL END,',') WITHIN GROUP (order by 1),'"type"') = 0 
+							 THEN '"type"' || CHR(58) || '"text",' || LISTAGG(
+							 CASE WHEN ROWNUM = 1 THEN '"key"' || CHR(58) || '"' || lower(f.fldkey) || '",' ELSE NULL END || 
+							 CASE RULETYPE
+							   WHEN 'MAXLENGTH'    THEN '"maxlength"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'TEXTMASK'     THEN '"textMask"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'EXCLUDECHARS' THEN '"excludechars"'||CHR(58)||'"true"'
+							   WHEN 'MINLENGTH'    THEN '"minlength"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISREQUIRED'   THEN '"required"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISDATE'       THEN '"type"'||CHR(58)||'"date"'
+							   WHEN 'ISNUMERIC'    THEN '"type"'||CHR(58)||'"number"'
+							   WHEN 'MAX_DATE_VALUE'    THEN '"maxValue"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'MIN_DATE_VALUE'    THEN '"minValue"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISINTEGER'    THEN '"minValue"'||CHR(58)||'"'||dvvalue||'"'
+							 ELSE NULL END,',') WITHIN GROUP (order by 1)
+							 ELSE LISTAGG(
+							 CASE WHEN ROWNUM = 1 THEN '"key"' || CHR(58) || '"' || lower(f.fldkey) || '",' ELSE NULL END || 
+							 CASE RULETYPE
+							   WHEN 'MAXLENGTH'    THEN '"maxlength"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'TEXTMASK'     THEN '"textMask"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'EXCLUDECHARS' THEN '"excludechars"'||CHR(58)||'"true"'
+							   WHEN 'MINLENGTH'    THEN '"minlength"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISREQUIRED'   THEN '"required"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISDATE'       THEN '"type"'||CHR(58)||'"date"'
+							   WHEN 'ISNUMERIC'    THEN '"type"'||CHR(58)||'"number"'
+							   WHEN 'MAX_DATE_VALUE'    THEN '"maxValue"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'MIN_DATE_VALUE'    THEN '"minValue"'||CHR(58)||'"'||dvvalue||'"'
+							   WHEN 'ISINTEGER'    THEN '"minValue"'||CHR(58)||'"'||dvvalue||'"'
+							 ELSE NULL END,',') WITHIN GROUP (order by 1)
+							 END
+							 from DV_FIELDS f
+							 LEFT OUTER JOIN DV_RULES r ON R.DVFIELDSID = F.ID
+							 LEFT OUTER JOIN DV_RULETYPES rt ON RT.ID = R.DVRULETYPESID
+							 WHERE F.FLDTABLE = 'STUDENTS' AND F.FLDCOLUMN = UPPER(uffe.student_field)
+						)  || '},'
+                    || '"value"'||chr(58)||'"' ||       CASE WHEN '~[gpv:formtype]' IN ('S','P') THEN
+                                                            CASE WHEN UPPER(UFFE.ELEMENT_TYPE) = 'PINPASSWORD' THEN NULL ELSE fb_function.get_field('STUDENTS',uffe.student_field,~(curstudid)) END
+                                                        ELSE null END || '"},'
+            || '"layout"'||chr(58)||'"' ||      uffe.layout || '",'
+            || '"workflow"'||chr(58)||'{'
+                || '"enabled"'||chr(58) || nvl(uffe.wf_enabled,'false') || ','
+                || '"link"'||chr(58) || nvl(uffe.wf_link,'false') || ','
+                || '"element"'||chr(58)||'' || nvl(uffe.wf_element_id,0) || ','
+                || '"value"'||chr(58)||'"' || uffe.wf_value || '"},'
+            || '"otherchoice"'||chr(58) || nvl(uffe.other_enabled,'false') || ','
+            || '"container"'||chr(58)||'{'
+                || '"enabled"'||chr(58) || nvl(uffe.containerenabled,'false') || ','
+                || '"id"'||chr(58)||'' || nvl(uffe.containerid,0) || ','
+                || '"column"'||chr(58)||'' || nvl(uffe.containercolumn,0) || ','
+                || '"position"'||chr(58)||'' || nvl(uffe.containerposition,0) || '},'
+            || CASE WHEN UPPER(UFFE.ELEMENT_TYPE) = 'PINPASSWORD' THEN '"pin"'||chr(58)||'{'
+                || '"type"'      ||chr(58)  || nvl(uffe.reserved1,0) || '},'
+                ELSE NULL END
+            || fb_function.get_table_data(uffe.id, ~(curstudid)) || ','
+            || '"choices"'||chr(58)||chr(91)
+            ||chr(93)||'}'||','))
+          from u_fb_form_element uffe
+            left outer join (
+              SELECT UFFRE.U_FB_FORM_ELEMENT_ID, UFFRD.RESPONSE_VALUE RESPONSE, UFFRD.ID RESPONSEDETAILID, UFFRE.ID RESPONSEELEMENTID , UFFR.WHENCREATED, UFFR.WHENMODIFIED, ROW_NUMBER() OVER (ORDER BY NVL(UFFR.WHENMODIFIED,UFFR.WHENCREATED) desc) rn
+              FROM U_FB_FORM_RESPONSE UFFR
+               INNER JOIN (
+                  SELECT ROW_NUMBER() OVER (PARTITION BY U_FB_FORM_RESPONSE_ID ORDER BY ID DESC) RN,
+                   U_FB_FORM_RESPONSE_ID,
+                   IPADDRESS,
+                   ID,
+                   responder,
+                   user_id
+                 FROM U_FB_FORM_RESPONSE_AUDIT
+                 WHERE USER_ID IS NOT NULL
+                 ~[if#res.~[gpv:responseid]=][else#res]AND U_FB_FORM_RESPONSE_AUDIT.U_FB_FORM_RESPONSE_ID = ~[gpv:responseid][/if#res]
+                 ORDER BY ID DESC
+               ) UFFRA ON UFFR.ID = UFFRA.U_FB_FORM_RESPONSE_ID AND UFFRA.RN = ~[if#res.~[gpv:responseid]=](select CASE count(*) WHEN 0 THEN 1 ELSE 999999999 END from u_fb_form where id = ~[gpv:formid;0] AND upper(archive_by) LIKE '%REFRESH%')[else#res]1[/if#res]
+              INNER JOIN U_FB_FORM_RESPONSE_DETAIL UFFRD ON UFFR.ID = UFFRD.U_FB_FORM_RESPONSE_ID
+              INNER JOIN U_FB_FORM_RESPONSE_ELEMENT UFFRE ON UFFR.ID = UFFRE.U_FB_FORM_RESPONSE_ID AND UFFRD.U_FB_FORM_RESPONSE_ELEMENT_ID = UFFRE.ID
+              WHERE UFFR.U_FB_FORM_ID = ~[gpv:formid] AND rownum <= 1
+                  ~[if#studentid.~[gpv:formtype]=S] AND UFFR.STUDENT_ID = ~(curstudid) ~[if#rs.isstudent] AND UFFR.RESPONSE_TYPE = 'S'[/if#rs] ~[if#rg.isguardian] AND UFFR.RESPONSE_TYPE = 'G'[/if#rg] ~[if#ro.~[x:userid]#] AND UFFRA.USER_ID = ~[x:userid][/if#ro][/if#studentid]
+                  ~[if#studentid.~[gpv:formtype]=P] AND UFFR.STUDENT_ID = ~(curstudid)[/if#studentid]
+                  ~[if#ti.~[gpv:formtype]=TI] AND UFFR.USER_ID = ~[gpv:subjectid][/if#ti]
+                  ~[if#tc.~[gpv:formtype]=TC] AND UFFR.USER_ID = ~[gpv:subjectid][/if#tc]
+                  ~[if#formtypeg.~[gpv:formtype]=G] AND UFFR.id = -1[/if#formtypeg]
+                  ~[if#schoolid.~[gpv:formtype]=S] AND UFFR.SCHOOL_ID = ~(curschoolid)[/if#schoolid]--AND UFFR.SCHOOL_ID = 100 --
+                  ~[if#yearid.~[gpv:yearid]=Y]AND UFFR.YEAR_ID = ~(curyearid)[/if#yearid]
+              ORDER BY NVL(UFFR.WHENMODIFIED,UFFR.WHENCREATED) desc
+            ) UFFR ON uffe.id = UFFR.U_FB_FORM_ELEMENT_ID AND UFFR.RN = 1
+            WHERE UFFE.U_FB_FORM_ID = uff.id)
+        ||chr(93)||'}' as content
+    from u_fb_form uff
+    where uff.id = ~[gpv:formid]]~(content)[/tlist_sql]
+}
+[/if#req]
