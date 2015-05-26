@@ -3,6 +3,7 @@
     SELECT
       u_fb_form.id as form_id,
       u_fb_form.form_title,
+      u_fb_form.form_type,
       u_fb_form.description,
       u_fb_form_response.id as response_id
     FROM u_fb_form
@@ -28,8 +29,9 @@
 
     {
       "form_id": ~(form_id),
-      "description": "~(description)",
-      "form_title": "~(form_title)",
+      "title": "~(form_title)",
+      "type": "~(form_type)",
+      "desc": "~(description)",
       "response_id": ~(response_id)
     },
   [/tlist_sql]{}
