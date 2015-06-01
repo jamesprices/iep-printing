@@ -68,27 +68,45 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
           responseid: parseInt($(form).val())
         });
       });
-      console.log(selected);
+      
+      // console.log(selected);
 
       if (selected.length > 0) {
         var responses = [];
 
         $.each(selected, function(index, select) {
-          console.log('doing ajax');
           $.ajax({
             url: '/admin/students/iepprinting/responses.json.html',
-            dataType: 'json',
-            data: select
+            dataType: 'JSON',
+            data: select,
+            async: false
           })
           .done(function(response) {
-            responses.push(response);
+            console.log(response);
+            responses.push(cleanUpResponse(response));
           })
           .fail(function() {
             console.log("error");
           });
         });
 
+        responses = JSON.stringify(responses);
         console.log(responses);
+
+        $.ajax({
+          url: "https://pats.irondistrict.org/printing/",
+          method: "post",
+          data: {
+            "responses": responses
+          }
+        })
+        .done(function(response) {
+          console.log(response);
+        })
+        .fail(function(data) {
+          console.log('failure sending to php');
+          console.log(data);
+        });
 
       } else {
         console.log('selected length is 0');
@@ -115,6 +133,29 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
       if ($(checkedCheckboxes).length == $(checkboxes).length) {
         $('#btnToggleSelection').text('Select None');
       }
+    }
+
+    function cleanUpResponse(dirty) {
+      var clean = {
+        form: {
+          id: dirty.form.id,
+          title: dirty.form.title,
+          description: dirty.form.description,
+          type: dirty.form.type
+        },
+        response: []     
+      };
+
+      $.each(dirty.form.elements, function(index, element) {
+        clean.response.push({
+          response: element.response,
+          title: element.title,
+          type: element.type,
+          description: element.description
+        });
+      });
+
+      return clean;
     }
   });
 });
