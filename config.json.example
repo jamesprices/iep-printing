@@ -1,0 +1,29 @@
+{
+  "sftp": {
+    "host": "localhost",
+    "user": "root",
+    "pass": "secret",
+    "remotePath": "/path/to/project/root/"
+  },
+  "src": {
+    "less": "less/styles.less",
+    "watch": [
+      "less/*.less",
+      "less/**/*.less"
+    ],
+    "move": [
+      "js/3rd-party-library.js",
+      "js/3rd-party-library/folder/**"
+    ],
+    "sftp": {
+      "scripts": "plugin/web_root/scripts/**/*",
+      "images": "plugin/web_root/images/**/*"
+    }
+  },
+  "dest": {
+    "zip": ".",
+    "less": "plugin/web_root/scripts/project_name/",
+    "move": "plugin/web_root/scripts/project_name/"
+  }
+
+}
