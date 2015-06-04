@@ -2,7 +2,7 @@
 require(['jquery', 'handlebars'], function($, Handlebars) {
 
   $(document).ready(function() {
-    // often used css selectors
+    // often used jquery css selectors
     var checkboxes = '.forms-list-container input[type=checkbox]';
     var checkedCheckboxes = '.forms-list-container input[type=checkbox]:checked';
 
@@ -30,9 +30,9 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
 
       if (forms.length > 0) {
         $.each(forms, function(index, form) {
-          var source = $('#form-list-item-template').html();
+          var source = $('#form-list-item-template').html(); // template lives here "/web_root/admin/students/iepprinting/index.html"
           var template = Handlebars.compile(source);
-          var html = template(form);
+          var html = template(form); 
 
           var listNum = ((index % 3) + 1);
 
@@ -46,19 +46,20 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
           '<p> Sorry, no forms could be found matching your selection. </p>'
         );
       }
-
-    })
+    });
 
     // action when print selection button is clicked
     function printSelectedForms() {
-      $('#btnPrintSelection').blur();
+      $('#btnPrintSelection').blur(); // unfocuses the button
+
       // make sure there are checked forms
       if ($(checkedCheckboxes).length < 1) {
-        alert('There are no forms selected.');
+        alert('There are no forms selected.'); // TODO: might want to change how to notify
         return;
       }
 
       var selected = [];
+
       $(checkedCheckboxes).each(function(index, form) {
         selected.push({
           frn: frn,
@@ -109,7 +110,7 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
         });
 
       } else {
-        console.log('selected length is 0');
+        alert('ERROR: selected form\'s data could not be collected');
       }
     }
 
@@ -143,16 +144,16 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
           description: dirty.form.description,
           type: dirty.form.type
         },
-        response: []     
+        response: []
       };
 
       $.each(dirty.form.elements, function(index, element) {
-        clean.response.push({
-          response: element.response,
-          title: element.title,
-          type: element.type,
-          description: element.description
-        });
+        if (element.response || element.response.length > 0) {
+          clean.response.push({
+            field: element.class,
+            response: element.response
+          });
+        }
       });
 
       return clean;
