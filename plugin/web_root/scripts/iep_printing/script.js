@@ -32,7 +32,7 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
         $.each(forms, function(index, form) {
           var source = $('#form-list-item-template').html(); // template lives here "/web_root/admin/students/iepprinting/index.html"
           var template = Handlebars.compile(source);
-          var html = template(form); 
+          var html = template(form);
 
           var listNum = ((index % 3) + 1);
 
@@ -69,7 +69,7 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
           responseid: parseInt($(form).val())
         });
       });
-      
+
       // console.log(selected);
 
       if (selected.length > 0) {
@@ -98,7 +98,8 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
           url: "https://pats.irondistrict.org/printing/",
           method: "post",
           data: {
-            "responses": responses
+            "responses": responses,
+            "student": student
           }
         })
         .done(function(response) {
