@@ -2,7 +2,7 @@
 require(['jquery', 'handlebars'], function($, Handlebars) {
 
   $(document).ready(function() {
-    // often used css selectors
+    // often used jquery css selectors
     var checkboxes = '.forms-list-container input[type=checkbox]';
     var checkedCheckboxes = '.forms-list-container input[type=checkbox]:checked';
 
@@ -30,7 +30,7 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
 
       if (forms.length > 0) {
         $.each(forms, function(index, form) {
-          var source = $('#form-list-item-template').html();
+          var source = $('#form-list-item-template').html(); // template lives here "/web_root/admin/students/iepprinting/index.html"
           var template = Handlebars.compile(source);
           var html = template(form);
 
@@ -46,19 +46,20 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
           '<p> Sorry, no forms could be found matching your selection. </p>'
         );
       }
-
-    })
+    });
 
     // action when print selection button is clicked
     function printSelectedForms() {
-      $('#btnPrintSelection').blur();
+      $('#btnPrintSelection').blur(); // unfocuses the button
+
       // make sure there are checked forms
       if ($(checkedCheckboxes).length < 1) {
-        alert('There are no forms selected.');
+        alert('There are no forms selected.'); // TODO: might want to change how to notify
         return;
       }
 
       var selected = [];
+
       $(checkedCheckboxes).each(function(index, form) {
         selected.push({
           frn: frn,
@@ -68,10 +69,11 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
           responseid: parseInt($(form).val())
         });
       });
-      
+
       // console.log(selected);
 
       if (selected.length > 0) {
+        var apiUrl = "https://pats.irondistrict.org/printing/";
         var responses = [];
 
         $.each(selected, function(index, select) {
@@ -82,7 +84,6 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
             async: false
           })
           .done(function(response) {
-            console.log(response);
             responses.push(cleanUpResponse(response));
           })
           .fail(function() {
@@ -91,17 +92,30 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
         });
 
         responses = JSON.stringify(responses);
-        console.log(responses);
+        var stud = JSON.stringify(student);
 
         $.ajax({
-          url: "https://pats.irondistrict.org/printing/",
+          url: apiUrl,
           method: "post",
           data: {
-            "responses": responses
+            "responses": responses,
+            "student": stud
           }
         })
         .done(function(response) {
-          console.log(response);
+          response = JSON.parse(response);
+          if (response.file.length > 0) {
+            var win = window.open(apiUrl + response.file[0], '_blank');
+            if (win) {
+              win.focus();
+            } else {
+              alert('ERROR: Please allow popups for this page.');
+            }
+          }
+
+          for (var key in response.error) {
+            $('input[data-form-id='+key+']').parents('li').addClass('error');
+          }
         })
         .fail(function(data) {
           console.log('failure sending to php');
@@ -109,7 +123,7 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
         });
 
       } else {
-        console.log('selected length is 0');
+        alert('ERROR: selected form\'s data could not be collected');
       }
     }
 
@@ -143,16 +157,16 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
           description: dirty.form.description,
           type: dirty.form.type
         },
-        response: []     
+        response: []
       };
 
       $.each(dirty.form.elements, function(index, element) {
-        clean.response.push({
-          response: element.response,
-          title: element.title,
-          type: element.type,
-          description: element.description
-        });
+        if (element.response || element.response.length > 0) {
+          clean.response.push({
+            field: element.class,
+            response: element.response
+          });
+        }
       });
 
       return clean;
