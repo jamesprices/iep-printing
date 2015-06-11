@@ -73,6 +73,7 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
       // console.log(selected);
 
       if (selected.length > 0) {
+        var apiUrl = "https://pats.irondistrict.org/printing/";
         var responses = [];
 
         $.each(selected, function(index, select) {
@@ -83,7 +84,6 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
             async: false
           })
           .done(function(response) {
-            console.log(response);
             responses.push(cleanUpResponse(response));
           })
           .fail(function() {
@@ -92,18 +92,30 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
         });
 
         responses = JSON.stringify(responses);
-        console.log(responses);
+        var stud = JSON.stringify(student);
 
         $.ajax({
-          url: "https://pats.irondistrict.org/printing/",
+          url: apiUrl,
           method: "post",
           data: {
             "responses": responses,
-            "student": student
+            "student": stud
           }
         })
         .done(function(response) {
-          console.log(response);
+          response = JSON.parse(response);
+          if (response.file.length > 0) {
+            var win = window.open(apiUrl + response.file[0], '_blank');
+            if (win) {
+              win.focus();
+            } else {
+              alert('ERROR: Please allow popups for this page.');
+            }
+          }
+
+          for (var key in response.error) {
+            $('input[data-form-id='+key+']').parents('li').addClass('error');
+          }
         })
         .fail(function(data) {
           console.log('failure sending to php');

@@ -2521,6 +2521,11 @@ div#content-main .forms-list-container .forms-list li {
 div#content-main .forms-list-container .forms-list li .form-name {
   margin-left: 5px;
 }
+div#content-main .forms-list-container .forms-list li.error {
+  border-color: red;
+  border-top: 2px solid red;
+  border-bottom: 2px solid red;
+}
 @media (max-width: 767px) {
   div#content-main .forms-list {
     float: none;
