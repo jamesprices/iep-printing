@@ -93,6 +93,7 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
 
         responses = JSON.stringify(responses);
         var stud = JSON.stringify(student);
+        console.log(responses);
 
         $.ajax({
           url: apiUrl,
