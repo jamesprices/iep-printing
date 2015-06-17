@@ -93,6 +93,7 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
 
         responses = JSON.stringify(responses);
         var stud = JSON.stringify(student);
+        console.log(responses);
 
         $.ajax({
           url: apiUrl,
@@ -162,8 +163,17 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
 
       $.each(dirty.form.elements, function(index, element) {
         if (element.response || element.response.length > 0) {
+          var classes = element.class.split(' ');
+          var field = element.class;
+          for (var key in classes) {
+            if (classes[key].indexOf('pdf_') === 0) {
+              field = classes[key].split('pdf_').join('');
+            }
+          }
+
           clean.response.push({
-            field: element.class,
+            field: field,
+            type: element.type,
             response: element.response
           });
         }
