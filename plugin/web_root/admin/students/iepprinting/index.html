@@ -76,7 +76,8 @@
            schools.name,
            schools.name,
            father,
-           mother
+           mother,
+           grade_level
          FROM
            students, schools
          WHERE students.SchoolId = schools.school_number
@@ -103,7 +104,8 @@
            "next_school": "~(15)",
            "enrollment_school": "~(16)",
            "father": "~(17)",
-           "mother": "~(18)"
+           "mother": "~(18)",
+           "grade": ~(19)
        [/tlist_sql]
       }
     </script>
