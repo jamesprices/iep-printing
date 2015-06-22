@@ -104,9 +104,9 @@ require(['jquery', 'handlebars'], function($, Handlebars) {
           }
         })
         .done(function(response) {
-          response = JSON.parse(response);
+          // response = JSON.parse(response);
           if (response.file.length > 0) {
-            var win = window.open(apiUrl + response.file[0], '_blank');
+            var win = window.open(apiUrl + response.file, '_blank');
             if (win) {
               win.focus();
             } else {
