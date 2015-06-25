@@ -23,7 +23,7 @@
     ~[wc:admin_header_frame_css]
 
     <!-- breadcrumbs -->
-    <a href="/admin/home.html" target="_top">Start Page</a> &gt <a href="home.html?selectstudent=nosearch" target="_top">Student Selection</a> &gt IEP Printing
+    <a href="/admin/home.html" target="_top">~[text:psx.html.admin.home.start_page]</a> &gt <a href="home.html?selectstudent=nosearch" target="_top">Student Selection</a> &gt IEP Printing
 
     ~[wc:admin_navigation_frame_css]
     <!-- /frame header nav -->
@@ -34,7 +34,8 @@
           ~[wc:title_student_begin_css]Printable Forms~[wc:title_student_end_css]
         </div>
 
-        <div class="pull-right">
+        <div class="pull-right" style="margin-top: 20px;">
+          <a href="/admin/students/iepprinting/blank.html?frn=~(studentfrn)">Print blank forms</a>
           <button id="btnPrintSelection" type="submit">Print Selected</button>
         </div>
 
@@ -109,6 +110,6 @@
        [/tlist_sql]
       }
     </script>
-    <script type="text/javascript" src="/scripts/iep_printing/script.js"></script>
+    <script type="text/javascript" src="/scripts/iep_printing/index.js"></script>
   </body>
 </html>

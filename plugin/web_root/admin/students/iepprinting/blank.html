@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>IEP Printing</title>
+
+    <!-- styles -->
+    <link href="/images/css/screen.css" rel="stylesheet" media="screen">
+    <link href="/images/css/print.css" rel="stylesheet" media="print">
+    <link rel="stylesheet" href="/scripts/iep_printing/styles.css" media="screen" title="no title" charset="utf-8">
+
+    <!-- scripts -- >
+    ~[wc:commonscripts]
+
+  </head>
+  <body>
+    <!-- frame header nav -->
+    ~[wc:admin_header_frame_css]
+
+    <!-- breadcrumbs -->
+    <a href="/admin/home.html" target="_top">Start Page</a> &gt 
+    <a href="/home.html?selectstudent=nosearch" target="_top">Student Selection</a> &gt 
+    <a href="/admin/students/iepprinting/index.html?frn=~(studentfrn)">IEP Printing</a> &gt 
+    Print Blank Forms
+
+    ~[wc:admin_navigation_frame_css]
+    <!-- /frame header nav -->
+
+    <!-- main content -->
+    <div class="forms-list-container">
+    	<div class="row">
+    		<div class="pull-left">
+    			~[wc:title_student_begin_css]Print Blank Forms~[wc:title_student_end_css]
+    		</div>
+
+    		<div class="pull-right" style="margin-top: 20px;">
+    			<button id="btnPrintSelection" type="submit">Print Selected</button>
+    		</div>
+    	</div>
+
+    	<div class="row">
+    		<a href="javascript:void(0)" id="btnToggleSelection">Select All</a>
+    	</div>
+
+		<ul class="forms-list"></ul>
+		<ul class="forms-list"></ul>
+		<ul class="forms-list"></ul>
+    </div>
+
+	<script type="text/x-handlebars-template" id="form-list-item-template">
+		<li>
+			<input type="checkbox" name="forms[]" value="{{form_id}}" data-form-type="{{type}}">
+			<span class="form-name">{{title}} - {{desc}}</span>
+		</li>
+	</script>
+	<script type="text/javascript">
+		var forms = [
+			~[tlist_sql;
+				SELECT 
+					id,
+					form_title,
+					form_type,
+					description
+				FROM u_fb_form
+				WHERE publish = 'true';
+
+				;nonemessage={}
+			]
+
+			{
+				"form_id": ~(id),
+				"title": "~(form_title)",
+				"type": "~(form_type)",
+				"description": "~(description)"
+			},
+
+			[/tlist_sql]{}
+		];
+
+		forms.pop();
+		console.log(forms);
+	</script>
+	<script type="text/javascript" src="/scripts/iep_printing/blank.js"></script>
+  </body>
+</html>

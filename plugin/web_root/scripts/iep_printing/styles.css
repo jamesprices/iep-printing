@@ -2495,7 +2495,6 @@ div#content-main .forms-list-container button {
 }
 div#content-main .forms-list-container button#btnPrintSelection {
   display: none;
-  margin-top: 20px;
   margin-bottom: 10px;
 }
 div#content-main .forms-list-container .row {
