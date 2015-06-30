@@ -10,9 +10,13 @@ div#content-main {
 
       &#btnPrintSelection {
         display: none;
-        margin-top: 20px;
+        // margin-top: 20px;
         margin-bottom: 10px;
       }
+    }
+
+    #btnToggleSelection {
+      display: none;
     }
 
     .row {
@@ -38,12 +42,22 @@ div#content-main {
 
         .form-name {
           margin-left: 5px;
+          display: inline-block;
+          width: 90%;
+        }
+
+        .form-error {
+          color: #a94442;
         }
 
         &.error {
-          border-color: red;
-          border-top: 2px solid red;
-          border-bottom: 2px solid red;
+          border-color: #a94442;
+          border-top: 2px solid #a94442;
+          border-bottom: 2px solid #a94442;
+
+          .form-error {
+            margin-bottom: 5px;
+          }
         }
       }
     }
@@ -61,4 +75,8 @@ div#content-main {
       }
     }
   }
+}
+
+.icheckbox_square-blue {
+  float: left;
 }

@@ -2495,8 +2495,10 @@ div#content-main .forms-list-container button {
 }
 div#content-main .forms-list-container button#btnPrintSelection {
   display: none;
-  margin-top: 20px;
   margin-bottom: 10px;
+}
+div#content-main .forms-list-container #btnToggleSelection {
+  display: none;
 }
 div#content-main .forms-list-container .row {
   margin-left: 5px;
@@ -2520,15 +2522,26 @@ div#content-main .forms-list-container .forms-list li {
 }
 div#content-main .forms-list-container .forms-list li .form-name {
   margin-left: 5px;
+  display: inline-block;
+  width: 90%;
+}
+div#content-main .forms-list-container .forms-list li .form-error {
+  color: #a94442;
 }
 div#content-main .forms-list-container .forms-list li.error {
-  border-color: red;
-  border-top: 2px solid red;
-  border-bottom: 2px solid red;
+  border-color: #a94442;
+  border-top: 2px solid #a94442;
+  border-bottom: 2px solid #a94442;
+}
+div#content-main .forms-list-container .forms-list li.error .form-error {
+  margin-bottom: 5px;
 }
 @media (max-width: 767px) {
   div#content-main .forms-list {
     float: none;
     width: 95%;
   }
+}
+.icheckbox_square-blue {
+  float: left;
 }
