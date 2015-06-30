@@ -20,6 +20,7 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
       forms.pop();
 
       if (forms.length > 0) {
+        $('#btnToggleSelection').show();
         $.each(forms, function(index, form) {
           var source = $('#form-list-item-template').html(); // template lives here "/web_root/admin/students/iepprinting/index.html"
           var template = Handlebars.compile(source);
@@ -107,7 +108,9 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
           }
 
           for (var key in response.error) {
-            $('input[data-form-id='+key+']').parents('li').addClass('error');
+            var parentElement = $('input[data-form-id='+key+']').parents('li');
+            parentElement.addClass('error');
+            parentElement.find('.form-error').text(response.error[key]);
           }
         })
         .fail(function(data) {

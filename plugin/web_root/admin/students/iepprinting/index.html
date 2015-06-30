@@ -52,8 +52,9 @@
 
     <script type="text/x-handlebars-template" id="form-list-item-template">
       <li>
+        <div class="form-error"></div>
         <input type="checkbox" name="response[]" value="{{response_id}}" data-form-id="{{form_id}}" data-form-type="{{type}}">
-        <span class="form-name">{{title}} - {{desc}}</span>
+        <div class="form-name">{{title}} - {{desc}}</div>
       </li>
     </script>
     <script type="text/javascript">
