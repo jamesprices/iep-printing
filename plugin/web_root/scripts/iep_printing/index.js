@@ -64,7 +64,6 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
       // console.log(selected);
 
       if (selected.length > 0) {
-        var apiUrl = "https://pats.irondistrict.org/printing/";
         var responses = [];
 
         $.each(selected, function(index, select) {
@@ -88,18 +87,19 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
         console.log(stud);
 
         $.ajax({
-          url: apiUrl,
+          url: Iep.apiUrl,
           method: "post",
           data: {
-            "responses": responses,
-            "student": stud
+            responses: responses,
+            student: stud,
+            action: "printFillForm"
           }
         })
         .done(function(response) {
           console.log(response);
           // response = JSON.parse(response);
           if (response.file.length > 0) {
-            var win = window.open(apiUrl + response.file, '_blank');
+            var win = window.open(Iep.apiUrl + response.file, '_blank');
             if (win) {
               win.focus();
             } else {

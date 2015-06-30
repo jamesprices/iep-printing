@@ -2,6 +2,7 @@
 define(['jquery'], function($) {
   var checkboxes = '.forms-list-container input[type=checkbox]';
   var checkedCheckboxes = '.forms-list-container input[type=checkbox]:checked';
+  var apiUrl = 'https://pats.irondistrict.org/printing/';
 
   var iCheck = function() {
     $(checkboxes).iCheck({
@@ -38,6 +39,7 @@ define(['jquery'], function($) {
     checkedCheckboxes: checkedCheckboxes,
     inputWatcher: inputWatcher,
     iCheck: iCheck,
-    toggleSelect: toggleSelect
+    toggleSelect: toggleSelect,
+    apiUrl
   }
 });
