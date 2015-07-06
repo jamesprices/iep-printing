@@ -79,7 +79,9 @@
            schools.name,
            father,
            mother,
-           grade_level
+           grade_level,
+           ethnicity,
+           home_phone
          FROM
            students, schools
          WHERE students.SchoolId = schools.school_number
@@ -107,7 +109,9 @@
            "enrollment_school": "~(16)",
            "father": "~(17)",
            "mother": "~(18)",
-           "grade": ~(19)
+           "grade": ~(19),
+           "ethnicity": "~(20)",
+           "home_phone": "~(21)"
        [/tlist_sql]
       }
     </script>
