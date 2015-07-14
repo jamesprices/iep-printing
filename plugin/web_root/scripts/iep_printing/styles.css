@@ -2497,6 +2497,9 @@ div#content-main .forms-list-container button#btnPrintSelection {
   display: none;
   margin-bottom: 10px;
 }
+div#content-main .forms-list-container button#btnPrintSelection i {
+  display: none;
+}
 div#content-main .forms-list-container #btnToggleSelection {
   display: none;
 }

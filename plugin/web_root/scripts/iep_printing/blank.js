@@ -10,7 +10,7 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
 		loadForms();
 		$('button[type=submit]').on('click', printSelectedForms);
 	});
-	
+
 	function loadForms() {
 		$.ajax({
 			url: Iep.apiUrl,
@@ -65,6 +65,8 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
 		console.log(JSON.stringify(selected));
 
 		if (selected.length > 0) {
+      togglePrintButtonState('disabled');
+
 			$.ajax({
 				url: Iep.apiUrl,
 				type: 'POST',
@@ -91,10 +93,23 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
 			.fail(function(data) {
 				console.log('Error');
 				console.log(data);
-			});
-			
+			})
+      .always(function() {
+        togglePrintButtonState('enabled');
+      });
+
 		} else {
 			alert('ERROR: selected form\'s data could not be collected');
 		}
 	}
+
+  function togglePrintButtonState(state) {
+    if (state == 'disabled') {
+      $('#btnPrintSelection').prop('disabled', true);
+      $('#btnPrintSelection i').show();
+    } else {
+      $('#btnPrintSelection').prop('disabled', false);
+      $('#btnPrintSelection i').hide();
+    }
+  }
 });

@@ -41,8 +41,6 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
 
     // action when print selection button is clicked
     function printSelectedForms() {
-      $('#btnPrintSelection').blur(); // unfocuses the button
-
       // make sure there are checked forms
       if ($(Iep.checkedCheckboxes).length < 1) {
         alert('There are no forms selected.'); // TODO: might want to change how to notify
@@ -64,58 +62,65 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
       // console.log(selected);
 
       if (selected.length > 0) {
+        togglePrintButtonState('disabled');
         var responses = [];
+        var ajaxCalls = [];
 
         $.each(selected, function(index, select) {
-          $.ajax({
-            url: '/admin/students/iepprinting/responses.json.html',
-            dataType: 'JSON',
-            data: select,
-            async: false
-          })
-          .done(function(response) {
-            responses.push(cleanUpResponse(response));
-          })
-          .fail(function() {
-            console.log("error");
-          });
+          ajaxCalls.push(
+            $.ajax({
+              url: '/admin/students/iepprinting/responses.json.html',
+              dataType: 'JSON',
+              data: select
+            })
+            .done(function(response) {
+              responses.push(cleanUpResponse(response));
+            })
+            .fail(function() {
+              console.log("error");
+            })
+          );
         });
 
-        responses = JSON.stringify(responses);
-        var stud = JSON.stringify(student);
-        console.log(responses);
-        console.log(stud);
+        $.when.apply($, ajaxCalls).then(function() {
+          responses = JSON.stringify(responses);
+          var stud = JSON.stringify(student);
+          console.log(responses);
+          console.log(stud);
 
-        $.ajax({
-          url: Iep.apiUrl,
-          method: "post",
-          data: {
-            responses: responses,
-            student: stud,
-            action: "printFillForm"
-          }
-        })
-        .done(function(response) {
-          console.log(response);
-          // response = JSON.parse(response);
-          if (response.file.length > 0) {
-            var win = window.open(Iep.apiUrl + response.file, '_blank');
-            if (win) {
-              win.focus();
-            } else {
-              alert('ERROR: Please allow popups for this page.');
+          $.ajax({
+            url: Iep.apiUrl,
+            method: "post",
+            data: {
+              responses: responses,
+              student: stud,
+              action: "printFillForm"
             }
-          }
+          })
+          .done(function(response) {
+            console.log(response);
+            // response = JSON.parse(response);
+            if (response.file.length > 0) {
+              var win = window.open(Iep.apiUrl + response.file, '_blank');
+              if (win) {
+                win.focus();
+              } else {
+                alert('ERROR: Please allow popups for this page.');
+              }
+            }
 
-          for (var key in response.error) {
-            var parentElement = $('input[data-form-id='+key+']').parents('li');
-            parentElement.addClass('error');
-            parentElement.find('.form-error').text(response.error[key]);
-          }
-        })
-        .fail(function(data) {
-          console.log('failure sending to php');
-          console.log(data);
+            for (var key in response.error) {
+              var parentElement = $('input[data-form-id='+key+']').parents('li');
+              parentElement.addClass('error');
+              parentElement.find('.form-error').text(response.error[key]);
+            }
+          })
+          .fail(function(data) {
+            console.log('failure sending to php');
+            console.log(data);
+          }).always(function() {
+            togglePrintButtonState('enabled');
+          });
         });
 
       } else {
@@ -153,6 +158,16 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
       });
 
       return clean;
+    }
+
+    function togglePrintButtonState(state) {
+      if (state == 'disabled') {
+        $('#btnPrintSelection').prop('disabled', true);
+        $('#btnPrintSelection i').show();
+      } else {
+        $('#btnPrintSelection').prop('disabled', false);
+        $('#btnPrintSelection i').hide();
+      }
     }
   });
 });
