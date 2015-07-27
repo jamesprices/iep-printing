@@ -10,25 +10,37 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
 		loadForms();
 		$('button[type=submit]').on('click', printSelectedForms);
 	});
-	
+
 	function loadForms() {
-		if (forms.length > 0) {
-			$('#btnToggleSelection').show();
-			$('#btnToggleSelection').on('click', Iep.toggleSelect);
-			$.each(forms, function(index, form) {
-				var source = $('#form-list-item-template').html();
-				var template = Handlebars.compile(source);
-				var html = template(form);
+		$.ajax({
+			url: Iep.apiUrl,
+			type: 'POST',
+			dataType: 'json',
+			data: {forms: JSON.stringify(forms), action: 'getBlanks'},
+		})
+		.done(function(response) {
+			if (response.length > 0) {
+				$('#btnToggleSelection').show();
+				$('#btnToggleSelection').on('click', Iep.toggleSelect);
+				$.each(response, function(index, form) {
+					var source = $('#form-list-item-template').html();
+					var template = Handlebars.compile(source);
+					var html = template(form);
 
-				var listNum = ((index % 3) + 1);
+					var listNum = ((index % 3) + 1);
 
-				$('.forms-list:nth-of-type('+listNum+')').append(html);
-			});
+					$('.forms-list:nth-of-type('+listNum+')').append(html);
+				});
 
-			Iep.iCheck();
-		} else {
-			$('#btnToggleSelection').after('<p> Sorry, no forms could be found matching your selection. </p>');
-		}
+				Iep.iCheck();
+			} else {
+				$('#btnToggleSelection').after('<p> Sorry, there are no printable blank forms right now. </p>');
+			}
+		})
+		.fail(function(error) {
+			console.log(error);
+			$('#btnToggleSelection').after('<p> Sorry, thre was an error communicating with the server. </p>');
+		});
 	}
 
 	function printSelectedForms(event) {
@@ -53,17 +65,18 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
 		console.log(JSON.stringify(selected));
 
 		if (selected.length > 0) {
-			var apiUrl = 'https://pats.irondistrict.org/printing/';
+      togglePrintButtonState('disabled');
+
 			$.ajax({
-				url: apiUrl,
+				url: Iep.apiUrl,
 				type: 'POST',
 				dataType: 'json',
-				data: {forms: JSON.stringify(selected), action: 'blank'},
+				data: {forms: JSON.stringify(selected), action: 'printBlanks'},
 			})
 			.done(function(response) {
 				console.log(response);
 				if (response.file.length > 0) {
-					var win = window.open(apiUrl + response.file, '_blank');
+					var win = window.open(Iep.apiUrl + response.file, '_blank');
 					if (win) {
 						win.focus();
 					} else {
@@ -81,12 +94,22 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
 				console.log('Error');
 				console.log(data);
 			})
-			.always(function() {
-				console.log("complete");
-			});
-			
+      .always(function() {
+        togglePrintButtonState('enabled');
+      });
+
 		} else {
 			alert('ERROR: selected form\'s data could not be collected');
 		}
 	}
+
+  function togglePrintButtonState(state) {
+    if (state == 'disabled') {
+      $('#btnPrintSelection').prop('disabled', true);
+      $('#btnPrintSelection i').show();
+    } else {
+      $('#btnPrintSelection').prop('disabled', false);
+      $('#btnPrintSelection i').hide();
+    }
+  }
 });
