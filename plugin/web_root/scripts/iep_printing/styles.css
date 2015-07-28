@@ -2500,6 +2500,9 @@ div#content-main .forms-list-container button#btnPrintSelection {
 div#content-main .forms-list-container button#btnPrintSelection i {
   display: none;
 }
+div#content-main .forms-list-container .options-container {
+  display: none;
+}
 div#content-main .forms-list-container #btnToggleSelection {
   display: none;
 }

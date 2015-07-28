@@ -15,15 +15,21 @@ define(['jquery'], function($) {
 
   var inputWatcher = function(event) {
     if ($(checkedCheckboxes).length < 1) {
-        $('#btnToggleSelection').text('Select All');
-        $('button[type=submit]').hide();
-      } else {
-        $('button[type=submit]').show();
-      }
+      $('#btnToggleSelection').text('Select All');
+      $('button[type=submit]').hide();
+    } else {
+      $('button[type=submit]').show();
+    }
 
-      if ($(checkedCheckboxes).length == $(checkboxes).length) {
-        $('#btnToggleSelection').text('Select None');
-      }
+    if ($(checkedCheckboxes).length > 1) {
+      $('.options-container').show();
+    } else {
+      $('.options-container').hide();
+    }
+
+    if ($(checkedCheckboxes).length == $(checkboxes).length) {
+      $('#btnToggleSelection').text('Select None');
+    }
   }
 
   var toggleSelect = function(event) {

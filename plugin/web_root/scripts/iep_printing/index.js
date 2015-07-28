@@ -94,7 +94,8 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
             data: {
               responses: responses,
               student: stud,
-              action: "printFillForm"
+              action: "printFillForm",
+              fileOption: $('input[name=fileOption]:checked').val()
             }
           })
           .done(function(response) {
