@@ -22,9 +22,9 @@ define(['jquery'], function($) {
     }
 
     if ($(checkedCheckboxes).length > 1) {
-      $('.options-container').show();
+      $('.options-file').show();
     } else {
-      $('.options-container').hide();
+      $('.options-file').hide();
     }
 
     if ($(checkedCheckboxes).length == $(checkboxes).length) {

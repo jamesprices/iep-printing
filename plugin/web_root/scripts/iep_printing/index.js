@@ -95,7 +95,8 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
               responses: responses,
               student: stud,
               action: "printFillForm",
-              fileOption: $('input[name=fileOption]:checked').val()
+              fileOption: $('input[name=fileOption]:checked').val(),
+              watermarkOption: $('input[name=watermarkOption]:checked').val()
             }
           })
           .done(function(response) {
