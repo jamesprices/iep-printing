@@ -2519,7 +2519,7 @@ div#content-main .forms-list-container button#btnPrintSelection {
   display: none;
   margin-bottom: 10px;
 }
-div#content-main .forms-list-container button#btnPrintSelection i {
+div#content-main .forms-list-container button#btnPrintSelection i.hide {
   display: none;
 }
 div#content-main .forms-list-container .options-file {
