@@ -36,14 +36,33 @@
         </div>
 
         <div class="pull-right" style="margin-top: 20px;">
-          <a href="/admin/students/iepprinting/blank.html?frn=~(studentfrn)">Print blank forms</a>
-          <button id="btnPrintSelection" type="submit"><i class="fa fa-spinner fa-pulse fa-fw margin-bottom"></i> Print Selected</button>
+          <div>
+            <a href="/admin/students/iepprinting/blank.html?frn=~(studentfrn)">Print blank forms</a>
+            <button id="btnPrintSelection" type="submit"><i class="fa fa-spinner fa-pulse fa-fw hide"></i> Print Selected</button>
+          </div>
         </div>
-
       </div>
 
       <div class="row">
-        <a href="javascript:void(0)" id="btnToggleSelection">Select All</a>
+        <div class="pull-left">
+          <a href="javascript:void(0)" id="btnToggleSelection">Select All</a>
+        </div>
+        <div class="pull-right">
+          <div class="well well-sm" style="margin-top: -40px;">
+            <strong>Options</strong>
+            <div class="options-file">
+              <span>File: </span>&nbsp;
+              <span title="All forms will be archived into a single ZIP file (one PDF per form)"><input type="radio" name="fileOption" value="zip" checked="checked">Zip &nbsp;</span>
+              <span title="All forms will be concatenated into a single PDF file"><input type="radio" name="fileOption" value="concat">Concatenate &nbsp;</span>
+            </div>
+            <div class="options-watermark">
+              <span>Watermark: </span>&nbsp;
+              <span title="Inserts a DRAFT watermark on every page of the resulting PDF(s)"><input type="radio" name="watermarkOption" value="draft" checked="checked"> Draft &nbsp;</span>
+              <span title="Inserts a COPY watermark on every page of the resulting PDF(s)"><input type="radio" name="watermarkOption" value="copy"> Copy &nbsp;</span>
+              <span title="No watermark is added"><input type="radio" name="watermarkOption" value="final"> Final &nbsp;</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <ul class="forms-list"></ul>

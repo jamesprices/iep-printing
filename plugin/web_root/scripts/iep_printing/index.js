@@ -94,7 +94,9 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
             data: {
               responses: responses,
               student: stud,
-              action: "printFillForm"
+              action: "printFillForm",
+              fileOption: $('input[name=fileOption]:checked').val(),
+              watermarkOption: $('input[name=watermarkOption]:checked').val()
             }
           })
           .done(function(response) {
@@ -163,10 +165,10 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
     function togglePrintButtonState(state) {
       if (state == 'disabled') {
         $('#btnPrintSelection').prop('disabled', true);
-        $('#btnPrintSelection i').show();
+        $('#btnPrintSelection i').removeClass('hide');
       } else {
         $('#btnPrintSelection').prop('disabled', false);
-        $('#btnPrintSelection i').hide();
+        $('#btnPrintSelection i').addClass('hide');
       }
     }
   });
