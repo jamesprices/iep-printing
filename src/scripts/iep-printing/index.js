@@ -1,6 +1,6 @@
 require.config({
   paths: {
-    iep: 'https://psimagestest.irondistrict.org/scripts/iep_printing/iep'
+    iep: '/* @echo IMAGE_SERVER_URL *//scripts/iep-printing/iep'
   }
 });
 
