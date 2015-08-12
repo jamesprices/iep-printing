@@ -1,19 +1,20 @@
+'use strict';
 
-define(['jquery'], function($) {
+define(['jquery'], function ($) {
   var checkboxes = '.forms-list-container input[type=checkbox]';
   var checkedCheckboxes = '.forms-list-container input[type=checkbox]:checked';
-  var apiUrl = 'https://pats.irondistrict.org/printing/';
+  var apiUrl = '//pats.irondistrict.org/printing/';
 
-  var iCheck = function() {
+  var iCheck = function iCheck() {
     $(checkboxes).iCheck({
       checkboxClass: 'icheckbox_square-blue',
       radioClass: 'iradio_square-blue'
     });
 
     $(checkboxes).on('ifChanged', inputWatcher);
-  }
+  };
 
-  var inputWatcher = function(event) {
+  var inputWatcher = function inputWatcher(event) {
     if ($(checkedCheckboxes).length < 1) {
       $('#btnToggleSelection').text('Select All');
       $('button[type=submit]').hide();
@@ -30,15 +31,15 @@ define(['jquery'], function($) {
     if ($(checkedCheckboxes).length == $(checkboxes).length) {
       $('#btnToggleSelection').text('Select None');
     }
-  }
+  };
 
-  var toggleSelect = function(event) {
+  var toggleSelect = function toggleSelect(event) {
     if ($(event.target).text() == 'Select All') {
       $(checkboxes).iCheck('check');
     } else {
       $(checkboxes).iCheck('uncheck');
     }
-  }
+  };
 
   return {
     checkboxes: checkboxes,
@@ -46,6 +47,6 @@ define(['jquery'], function($) {
     inputWatcher: inputWatcher,
     iCheck: iCheck,
     toggleSelect: toggleSelect,
-    apiUrl
-  }
+    apiUrl: apiUrl
+  };
 });
