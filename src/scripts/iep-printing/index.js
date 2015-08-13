@@ -19,7 +19,7 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
     .done(function(forms) {
       forms.pop();
 
-      if (forms.length > 0) {
+      if (forms.length > 0 && !$.isEmptyObject(forms[0])) {
         $('#btnToggleSelection').show();
         $.each(forms, function(index, form) {
           var source = $('#form-list-item-template').html(); // template lives here "/web_root/admin/students/iepprinting/index.html"
@@ -34,7 +34,7 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
         Iep.iCheck();
       } else {
         $('#btnToggleSelection').after(
-          '<p> Sorry, no forms could be found matching your selection. </p>'
+          '<p class="text-danger"> Sorry, no forms could be found for this student. </p>'
         );
       }
     });
