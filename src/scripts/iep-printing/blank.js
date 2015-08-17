@@ -44,9 +44,6 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
 	}
 
 	function printSelectedForms(event) {
-		$(event.target).blur();
-		var selected = [];
-
 		// make sure there are checked forms
 		if ($(Iep.checkedCheckboxes).length < 1) {
 			alert('There are no forms selected.'); // TODO: might want to change how to notify
@@ -106,10 +103,10 @@ require(['jquery', 'handlebars', 'iep'], function($, Handlebars, Iep) {
   function togglePrintButtonState(state) {
     if (state == 'disabled') {
       $('#btnPrintSelection').prop('disabled', true);
-      $('#btnPrintSelection i').show();
+      $('#btnPrintSelection i').removeClass('hide');
     } else {
       $('#btnPrintSelection').prop('disabled', false);
-      $('#btnPrintSelection i').hide();
+      $('#btnPrintSelection i').addClass('hide');
     }
   }
 });
