@@ -89,25 +89,24 @@
            TO_CHAR(entrydate, 'MM/DD/YYYY'),
            TO_CHAR(exitdate, 'MM/DD/YYYY'),
            gender,
-           schools.name,
+           schools1.name,
            TO_CHAR(dob, 'MM/DD/YYYY'),
            street,
            city,
            state,
            zip,
-           schools.name,
-           schools.name,
+           schools2.name,
+           schools3.name,
            father,
            mother,
            grade_level,
            ethnicity,
            home_phone
-         FROM
-           students, schools
-         WHERE students.SchoolId = schools.school_number
-         AND students.enrollment_schoolid = schools.school_number
-         AND students.next_school = schools.school_number
-         AND students.id = ~(curstudid);
+         FROM students
+					LEFT JOIN schools schools1 ON students.schoolid = schools1.school_number
+					LEFT JOIN schools schools2 ON students.enrollment_schoolid = schools2.school_number
+					LEFT JOIN schools schools3 ON students.next_school = schools3.school_number
+         WHERE students.id = ~(curstudid);
 
          ;nonemessage=
          ]
