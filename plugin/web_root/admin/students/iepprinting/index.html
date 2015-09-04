@@ -101,7 +101,8 @@
            mother,
            grade_level,
            ethnicity,
-           home_phone
+           home_phone,
+           schools1.schoolcity
          FROM students
 					LEFT JOIN schools schools1 ON students.schoolid = schools1.school_number
 					LEFT JOIN schools schools2 ON students.enrollment_schoolid = schools2.school_number
@@ -130,10 +131,11 @@
            "mother": "~(18)",
            "grade": ~(19),
            "ethnicity": "~(20)",
-           "home_phone": "~(21)"
+           "home_phone": "~(21)",
+           "school_city": "~(22)"
        [/tlist_sql]
       }
     </script>
-    <script type="text/javascript" src="<!-- @echo IMAGE_SERVER_URL -->/scripts/iep-printing/index.js"></script>
+    <script type="text/javascript" src="/scripts/iep-printing/index.js"></script>
   </body>
 </html>
