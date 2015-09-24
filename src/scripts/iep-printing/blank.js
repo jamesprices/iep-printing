@@ -1,6 +1,6 @@
 require.config({
   paths: {
-    iep: '/* @echo IMAGE_SERVER_URL *//scripts/iep-printing/iep'
+    iep: '/scripts/iep-printing/iep'
   }
 });
 
