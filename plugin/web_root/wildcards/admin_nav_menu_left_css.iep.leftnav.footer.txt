@@ -6,9 +6,9 @@
 </script>
 
 <script>
-  $j(function() {
-    var iepHtml = $j($j('#iep-template').html());
-    var select = $j('#navSysReports').parent();
-    iepHtml.insertBefore(select);
-  });
+  // $j(function() {
+  //   var iepHtml = $j($j('#iep-template').html());
+  //   var select = $j('#navSysReports').parent();
+  //   iepHtml.insertBefore(select);
+  // });
 </script>
